@@ -85,15 +85,18 @@
 
 /* USER CODE BEGIN Private defines */
 
-#define USER_CODE_OFFSET  0x4000 //<USER CODE> flash start address.
-
+#define USER_CODE_OFFSET  0x8000 //<USER CODE> flash start address.
 #define SECTOR_SIZE   1024
 #define HID_RX_SIZE   64
 
 #define HID_MAGIC_NUMBER_BKP_INDEX LL_RTC_BKP_DR4
 #define HID_MAGIC_NUMBER_BKP_VALUE 0x424C
-                             
-                        
+
+#define BOOT_1_PIN      GPIO_PIN_15 //BTT GTR 1.0
+#define BOOT_1_PORT     GPIOA
+#define BOOT_1_ENABLED  GPIO_PIN_RESET
+#define LED_1_PIN       GPIO_PIN_0
+#define LED_1_PORT      GPIOA
 
 //#define BOOT_1_PIN      GPIO_PIN_15 //DIYMROE STM32F407VGT board (Button PD15, LED PE0)
 //#define BOOT_1_PORT     GPIOD
@@ -107,10 +110,10 @@
 //#define LED_1_PIN       GPIO_PIN_7
 //#define LED_1_PORT      GPIOA
 
-#define BOOT_1_PIN      GPIO_PIN_2 //Extruder Board, STM32F405RGT6 board (Button PB2, No LED)
-#define BOOT_1_PORT     GPIOB
-#define BOOT_1_ENABLED  GPIO_PIN_SET
-#define CLOCK_DIV       8        // 16 MHz clock
+//#define BOOT_1_PIN      GPIO_PIN_2 //Extruder Board, STM32F405RGT6 board (Button PB2, No LED)
+//#define BOOT_1_PORT     GPIOB
+//#define BOOT_1_ENABLED  GPIO_PIN_SET
+//#define CLOCK_DIV       8        // 16 MHz clock
 //#define LED_1_PIN       GPIO_PIN_7
 //#define LED_1_PORT      GPIOA
 
@@ -131,6 +134,14 @@
 // #define BOOT_1_ENABLED  GPIO_PIN_RESET
 // #define LED_1_PIN       GPIO_PIN_5
 // #define LED_1_PORT      GPIOA
+
+#if USER_CODE_OFFSET < 0x10000
+  #define USER_CODE_PAGE (USER_CODE_OFFSET / 0x4000)
+#elif USER_CODE_OFFSET < 0x20000
+  #define USER_CODE_PAGE 4
+#else
+  #define USER_CODE_PAGE (USER_CODE_OFFSET / 0x20000 + 4)
+#endif
 
 /* USER CODE END Private defines */
 

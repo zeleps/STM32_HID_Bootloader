@@ -84,7 +84,7 @@ static uint8_t pageData[SECTOR_SIZE];
 typedef void (*funct_ptr)(void);
 
 uint32_t magic_val;
-uint16_t erase_page = 1;
+uint16_t erase_page = USER_CODE_PAGE;
 
 /* USER CODE END PV */
 
@@ -147,7 +147,11 @@ int main(void)
     __set_MSP(*(uint32_t *) (FLASH_BASE + USER_CODE_OFFSET));
     Jump_To_Application(); 
   }
-  
+
+#ifdef LED_1_PIN
+  HAL_GPIO_WritePin(LED_1_PORT, LED_1_PIN, GPIO_PIN_SET);
+#endif
+
   /* Reset the magic number backup memory */
   
   /* Enable Power Clock */
@@ -171,12 +175,13 @@ int main(void)
                                                
   static volatile uint32_t current_Page = (USER_CODE_OFFSET / 1024);
   static volatile uint16_t currentPageOffset = 0;
-                                                           
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1) {
+  while (1)
+  {
     if (new_data_is_received == 1) {
       new_data_is_received = 0;
       if ((currentPageOffset % SECTOR_SIZE) == 0 && memcmp(USB_RX_Buffer, CMD_SIGNATURE, sizeof (CMD_SIGNATURE)) == 0) {
@@ -184,10 +189,9 @@ int main(void)
           case 0x00:
 
           /*------------ Reset pages */
-          current_Page = 16;
+          current_Page = (USER_CODE_OFFSET / 1024);
           currentPageOffset = 0;
-          erase_page = 1;
-          // HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_0);	
+          erase_page = USER_CODE_PAGE;
           break;
 
         case 0x01:
@@ -310,12 +314,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
  
-                               
-                                  
-                                        
-                                    
-                                              
-
   /* Configure GPIO pin : PB2 */
   GPIO_InitStruct.Pin = BOOT_1_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -342,13 +340,6 @@ void write_flash_sector(uint32_t currentPage) {
 #endif
   FLASH_EraseInitTypeDef EraseInit;
   HAL_FLASH_Unlock();
-  
-                                                                   
-                                                  
-                                                  
-                                
-                                                
-                                                 
 
   /* Sector to the erase the flash memory (16, 32, 48 ... kbytes) */
   if ((currentPage == 16) || (currentPage == 32) ||
@@ -359,8 +350,6 @@ void write_flash_sector(uint32_t currentPage) {
 
     /* Specify sector number. Starts from 0x08004000 */
     EraseInit.Sector = erase_page++;
-                                              
-  
 
     /* This is also important! */
     EraseInit.NbSectors = 1;

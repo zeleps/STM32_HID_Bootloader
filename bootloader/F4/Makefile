@@ -208,9 +208,15 @@ $(BUILD_DIR):
 #######################################
 # clean up
 #######################################
+ifeq ($(OS),Windows_NT)
+clean:
+	$(ECHO) "CLEAN"
+	cmd /c del /q /s $(BUILD_DIR)
+else
 clean:
 	$(ECHO) "CLEAN"
 	-$(Q)rm -fR $(BUILD_DIR)
+endif
 
 #######################################
 # dependencies
