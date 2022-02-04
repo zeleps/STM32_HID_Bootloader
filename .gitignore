@@ -46,6 +46,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# VSCode folder
+.VSCode
+.pio
+
 # =========================
 # Generated Files
 # =========================
