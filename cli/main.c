@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 
   memset(page_data, 0, sizeof(page_data));
   read_bytes = fread(page_data, 1, sizeof(page_data), firmware_file);
-
+  
   while(1) {
 
     for(int i = 0; i < SECTOR_SIZE; i += HID_TX_SIZE - 1) {
@@ -188,14 +188,14 @@ int main(int argc, char *argv[]) {
         goto exit;
       }
       n_bytes += (HID_TX_SIZE - 1);
-      usleep(500);
+      //usleep(100);
     }
 
-    printf(" %d Bytes\n", n_bytes);
+    //printf(" %d Bytes\n", n_bytes);
 
     do{
       hid_read(handle, hid_rx_buf, 9);
-      usleep(500);
+      //usleep(100);
     // Exit the loop if we recieve 0x02 or 0x03
     }while((hid_rx_buf[7] & 0xFE) != 0x02);
 
